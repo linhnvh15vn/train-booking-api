@@ -12,3 +12,109 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Station {
+  id              String           @id @default(uuid())
+  name            String
+  journeyStations JourneyStation[]
+  bookingStarts   Booking[]        @relation("startingStation")
+  bookingEnds     Booking[]        @relation("endingStation")
+}
+
+model Journey {
+  id               String            @id @default(uuid())
+  name             String
+  scheduleId       String
+  schedule         Schedule          @relation(fields: [scheduleId], references: [id])
+  journeyStations  JourneyStation[]
+  journeyCarriages JourneyCarriage[]
+  Booking          Booking[]
+}
+
+model JourneyStation {
+  id            String   @id @default(uuid())
+  stationId     String
+  station       Station  @relation(fields: [stationId], references: [id])
+  journeyId     String
+  journey       Journey  @relation(fields: [journeyId], references: [id])
+  stopOrder     Int
+  departureTime DateTime
+}
+
+model Schedule {
+  id             String          @id @default(uuid())
+  name           String
+  journeys       Journey[]
+  carriagePrices CarriagePrice[]
+}
+
+model CarriageClass {
+  id               String            @id @default(uuid())
+  name             String
+  journeyCarriages JourneyCarriage[]
+  seatingCapacity  Int
+  carriagePrices   CarriagePrice[]
+  bookings         Booking[]
+}
+
+model JourneyCarriage {
+  id String @id @default(uuid())
+
+  journeyId String
+  journey   Journey @relation(fields: [journeyId], references: [id])
+
+  carriageClassId String
+  carriageClass   CarriageClass @relation(fields: [carriageClassId], references: [id])
+
+  position Int
+}
+
+model CarriagePrice {
+  id String @id @default(uuid())
+
+  scheduleId String
+  schedule   Schedule @relation(fields: [scheduleId], references: [id])
+
+  carriageClassId String
+  carriageClass   CarriageClass @relation(fields: [carriageClassId], references: [id])
+
+  price Float
+}
+
+enum BookingStatus {
+  ACTIVE
+  CANCELLED
+  PENDING
+}
+
+model Booking {
+  id   String   @id @default(uuid())
+  date DateTime
+
+  journeyId String
+  journey   Journey @relation(fields: [journeyId], references: [id])
+
+  startingStationId String
+  startingStation   Station @relation(name: "startingStation", fields: [startingStationId], references: [id])
+
+  endingStationId String
+  endingStation   Station @relation(name: "endingStation", fields: [endingStationId], references: [id])
+
+  carriageClassId String
+  carriageClass   CarriageClass @relation(fields: [carriageClassId], references: [id])
+
+  amountPaid Float
+  ticketNo   String @unique
+  seatNo     Int
+
+  passengerId String
+  passenger   Passenger @relation(fields: [passengerId], references: [id])
+}
+
+model Passenger {
+  id           String    @id @default(uuid())
+  firstName    String
+  lastName     String
+  emailAddress String    @unique
+  bookings     Booking[]
+}
