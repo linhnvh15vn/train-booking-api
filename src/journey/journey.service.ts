@@ -11,6 +11,27 @@ export class JourneyService {
     return this._prismaService.journey.findMany();
   }
 
+  getById(id: string) {
+    return this._prismaService.journey.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        schedule: true,
+        journeyStations: {
+          select: {
+            station: true,
+            stopOrder: true,
+            departureTime: true,
+          },
+          orderBy: {
+            stopOrder: 'asc',
+          },
+        },
+      },
+    });
+  }
+
   create(createJourneyDto: CreateJourneyDto) {
     return this._prismaService.journey.create({
       data: createJourneyDto,

@@ -20,6 +20,11 @@ export class JourneyController {
     return this._journeyService.getAll();
   }
 
+  @Get(':id')
+  getById(@Param('id') id: string) {
+    return this._journeyService.getById(id);
+  }
+
   @Post()
   create(@Body() createJourneyDto: CreateJourneyDto) {
     return this._journeyService.create(createJourneyDto);
