@@ -17,6 +17,11 @@ export class JourneyService {
         id,
       },
       include: {
+        journeyCarriages: {
+          include: {
+            carriageClass: true,
+          },
+        },
         schedule: true,
         journeyStations: {
           select: {
