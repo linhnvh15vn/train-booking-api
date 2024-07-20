@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { CreateJourneyDto } from 'src/journey/dto/create-journey.dto';
 import { UpdateJourneyDto } from 'src/journey/dto/update-journey.dto';
@@ -16,8 +17,8 @@ export class JourneyController {
   constructor(private readonly _journeyService: JourneyService) {}
 
   @Get()
-  getAll() {
-    return this._journeyService.getAll();
+  getAll(@Query() query) {
+    return this._journeyService.getAll(query);
   }
 
   @Get(':id')

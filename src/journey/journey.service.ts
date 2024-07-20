@@ -7,8 +7,27 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class JourneyService {
   constructor(private readonly _prismaService: PrismaService) {}
 
-  getAll() {
-    return this._prismaService.journey.findMany();
+  getAll(query) {
+    return this._prismaService.journey.findMany({
+      where: {
+        OR: [
+          {
+            journeyStations: {
+              some: {
+                stationId: query.startingStation,
+              },
+            },
+          },
+          {
+            journeyStations: {
+              some: {
+                stationId: query.endingStation,
+              },
+            },
+          },
+        ],
+      },
+    });
   }
 
   getById(id: string) {
