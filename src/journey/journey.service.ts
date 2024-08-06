@@ -10,11 +10,12 @@ export class JourneyService {
   getAll(query) {
     return this._prismaService.journey.findMany({
       where: {
-        OR: [
+        AND: [
           {
             journeyStations: {
               some: {
                 stationId: query.startingStation,
+                stopOrder: 0,
               },
             },
           },
@@ -22,6 +23,9 @@ export class JourneyService {
             journeyStations: {
               some: {
                 stationId: query.endingStation,
+                stopOrder: {
+                  gt: 0,
+                },
               },
             },
           },
